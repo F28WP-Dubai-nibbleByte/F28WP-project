@@ -9,10 +9,10 @@ But do be careful to avoid the incoming obstacles and do not forget to collect t
 Players can login and se their score.
 </h4>
 INSTRUCTIONS: <br>
- Use the up or down arrow keys to navigate and avoid obstacle and press any key to collect coins and fuel tokens
+ Use the up or down arrow keys to navigate and avoid obstacle and press any key to collect coins and fuel tokens <br>
 
-Trailer- https://www.youtube.com/watch?v=mY3JdoM6vJQ
-Client folder contains all the client side files while app.js is the server side.
+Trailer- https://www.youtube.com/watch?v=mY3JdoM6vJQ <br>
+Client folder contains all the client side files while app.js is the server side. <br>
 Please download the zip file of the code and open it on your device.
 
 # Draft Image
