@@ -1,92 +1,90 @@
 /* this file is used for the server part of the game
   The purpose of this file is to connect the server JS to the client JS.
   The Databases are linked using MySQL.
-  SOCKET gives unique ID and link the client side and server side.
 */
-const express = require('express');        // To store Express Values.
-const app = express();                     // App link using Express.
-const dataparser = require('body-parser'); // To store the datapraser.
-var username;                              // Stores Username Information.
-var password;                              // Stores Password Information.
-const urlencodedParser = dataparser();     // Read the parser value.
-const path = require('path');              // Sets Path Data.
-const http = require('http');              // Socket Information.
-const socketIO = require('socket.io')
-var encPassword;
-const server = http.createServer((request, response) => {
-    if (request.url === '/') {
-        response.write("Hello");
-        response.write("Restarting server");
-        response.end();}});
+function dbFunc() {
 
- // DIRECTORY LIST, INDEX.HTML LINK
-app.use(express.static('client'));
-app.get('/' , function(request,response) {
-    response.sendFile({root: __dirname} + '/client/index.html')});
-/*app.get('/api/scores/', function(request, response){
-    const Array = require('./scores')
-var scores = Array();
-response.JSON(scores);
-response.end;
-}); */
-// MYSQL DATABASE SERVER
-var mysql = require('mysql');
-const { urlencoded } = require('express');
-const { createConnection } = require('net');
-var con = mysql.createConnection({
-    host: "localhost",
-    user: "username",
-    password: "password"
-});
-//AREA TO CONNECT TO DATABASE
-con.connect(function(err) {
+  var userN;
+  var encPassword;
+
+  console.log("username --->"+$('#pname').val());
+  console.log("password--->"+$('#ppass').val());
+  var x = +$('#pname').val();
+  var y = +$('#ppass').val();
+  
+  if (x == "" || x == null)
+    {
+        alert("Username must be filled out");
+        return false;                    
+    }
+                
+  if (y == "" || y == null)
+    {
+        alert("Password must be filled out");
+        return false;
+    }
+
+     //JUMPING TO GAME.HTML
+     //location.replace('game.html');
+
+    console.log("Starting to connect to database"); 
+
+  // MYSQL DATABASE SERVER
+
+    const mysql = require('mysql');
+    const express = require('express');
+    const app = express();
+    const PORT = 3306
+  //  database: '<DB_NAME>' 
+
+
+    var connection = mysql.createConnection({
+        host: 'localhost',
+        user: 'root',
+        password: 'passw0rd'    
+    });
+
+    //AREA TO CONNECT TO DATABASE
+    connection.connect(function(err) {
     if (err) throw err;
     console.log("Connecting to the database")
     con.query("CREATE DATABASE database", function(err, result){
         if (err) throw err;
         console.log("Created the Database");
     })})
-con.connect(function(err) {
-    if(err) throw err;
-    console.log("connected!")
-    var sql = "CREATE TABLE leaderboard (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), address VARCHAR(255))";
-    con.query(sql, function(err,result){
-        if(err) throw err;
-        console.log("created the table");
+
+    connection.connect(function(err) {
+        if (err) console.error(err);
+        console.log("Connected!");
     });
-    });
-app.post('/auth' , urlencodedParser, function(request,response){
-   
-    username = request.body.user;
-    password = request.body.pass;
-   
+
    // USERNAME SANITIZATION AREA
-    username = username.replace("@","");
-    username = username.replace(";","");
-    username = username.replace("!","");
-    username = username.replace("","");
-    username = username.replace("#","");
-    username = username.replace("$","");
-    username = username.replace("%","");
-    username = username.replace("^","");
-    username = username.replace("*","");
-    username = username.replace("&","");
-    username = username.replace("(","");
-    username = username.replace(")","");
-    username = username.replace("=","");
-    username = username.replace("{","");
-    username = username.replace("}","");
-    username = username.replace(">","");
-    username = username.replace(":","");
-    username = username.replace("<","");
+   userN = x.replace("@","");
+   userN = x.replace(";","");
+   userN = x.replace("!","");
+   userN = x.replace("","");
+   userN = x.replace("#","");
+   userN = x.replace("$","");
+   userN = x.replace("%","");
+   userN = x.replace("^","");
+   userN = x.replace("*","");
+   userN = x.replace("&","");
+   userN = x.replace("(","");
+   userN = x.replace(")","");
+   userN = x.replace("=","");
+   userN = x.replace("{","");
+   userN = x.replace("}","");
+   userN = x.replace(">","");
+   userN = x.replace(":","");
+   userN = x.replace("<","");
 
     // Password To Be Encrypted:
     var key = crypto.createCipher('aes-128-cbc', 'pass');
-    encPassword = key.update(pass, 'utf8', 'hex')
+    encPassword = key.update(y, 'utf8', 'hex')
     encPassword += key.final('hex');
 
     // Checking if user data/ username exists:
-    var checkingusername = "SELECT * from players WHERE username = '" + user + "';";
+    var checkingusername = "SELECT * from players WHERE username = '" + userN + "';";
     con.query(checkingusername, function(err, result){
         if (err) throw err;
 
@@ -114,7 +112,7 @@ app.post('/auth' , urlencodedParser, function(request,response){
     // CASE: If User Does Not Exist:
     else{
     console.log("user does not exist!");
-    var SQL = "INSERT INTO players (Username, Password) VALUES ('"+ user +"','"+ pass+"');";
+    var SQL = "INSERT INTO players (Username, Password) VALUES ('"+ userN +"','"+ encPassword +"');";
     con.query(SQL, function (err,result) {
         if (err) throw err;
         console.log("first record installed");
@@ -123,19 +121,7 @@ app.post('/auth' , urlencodedParser, function(request,response){
         //JUMPING TO GAME.HTML
         response.sendFile(__dirname + '/client/game.html');
     };
-});
-
-// CONNECTING TO SERVER:
-const port = process.env.PORT || 3306;
-const server = app.listen(port,function(){
-    console.log('Listening on the port : ${port}');
-
-});
-
-// Connecting to socket.io
-// We send and receive objects:
-const io = require('socket.io')(server);
-io.sockets.on('connection', function(socket) {
-    console.log('connecting to the socket')})});
+}); 
 
 
+}             
