@@ -11,5 +11,8 @@ Players can login and se their score.
 INSTRUCTIONS: <br>
  Use the up or down arrow keys to navigate and avoid obstacle and press any key to collect coins and fuel tokens
 
+Client folder contains all the client side files while app.js is the server side.
+Please download the zip file of the code and open it on your device.
+
 # Draft Image
 ![alt text](https://github.com/F28WP-Dubai-nibbleByte/F28WP-project/blob/master/PROJECT-1.jpg?raw=true)
